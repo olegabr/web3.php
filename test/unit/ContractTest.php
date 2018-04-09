@@ -471,7 +471,7 @@ class ContractTest extends TestCase
         } else {
             $account = $this->accounts[0];
         }
-        $contract->bytecode($this->testBytecode)->new(1000000, 'Game Token', 1, 'GT', [
+        $contract->bytecode($this->testBytecode)->deploy(1000000, 'Game Token', 1, 'GT', [
             'from' => $account,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract) {
@@ -515,7 +515,7 @@ class ContractTest extends TestCase
         } else {
             $toAccount = $this->accounts[1];
         }
-        $contract->bytecode($this->testBytecode)->new(1000000, 'Game Token', 1, 'GT', [
+        $contract->bytecode($this->testBytecode)->deploy(1000000, 'Game Token', 1, 'GT', [
             'from' => $fromAccount,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract) {
@@ -591,7 +591,7 @@ class ContractTest extends TestCase
         } else {
             $toAccount = $this->accounts[1];
         }
-        $contract->bytecode($this->testBytecode)->new(10000, 'Game Token', 1, 'GT', [
+        $contract->bytecode($this->testBytecode)->deploy(10000, 'Game Token', 1, 'GT', [
             'from' => $fromAccount,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract) {
@@ -651,7 +651,7 @@ class ContractTest extends TestCase
         } else {
             $toAccount = $this->accounts[1];
         }
-        $contract->bytecode($this->testBytecode)->new(10000, 'Game Token', 1, 'GT', [
+        $contract->bytecode($this->testBytecode)->deploy(10000, 'Game Token', 1, 'GT', [
             'from' => $fromAccount,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract) {
@@ -724,7 +724,7 @@ class ContractTest extends TestCase
         } else {
             $toAccount = $this->accounts[1];
         }
-        $contract->bytecode($this->testBytecode)->new(10000, 'Game Token', 1, 'GT', [
+        $contract->bytecode($this->testBytecode)->deploy(10000, 'Game Token', 1, 'GT', [
             'from' => $fromAccount,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract) {
@@ -782,7 +782,7 @@ class ContractTest extends TestCase
             $toAccount = $this->accounts[1];
         }
         // Deploy user contract.
-        $contract->bytecode($this->testUserBytecode)->new([
+        $contract->bytecode($this->testUserBytecode)->deploy([
             'from' => $fromAccount,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract) {
