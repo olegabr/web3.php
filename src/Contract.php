@@ -374,7 +374,7 @@ class Contract
      * @param mixed
      * @return void
      */
-    public function new()
+    public function deploy()
     {
         if (isset($this->constructor)) {
             $constructor = $this->constructor;

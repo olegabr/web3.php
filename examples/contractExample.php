@@ -278,7 +278,7 @@ $web3->eth->accounts(function ($err, $accounts) use ($contract, $testBytecode) {
         }
         $fromAccount = $accounts[0];
         $toAccount = $accounts[1];
-        $contract->bytecode($testBytecode)->new(1000000, 'Game Token', 1, 'GT', [
+        $contract->bytecode($testBytecode)->deploy(1000000, 'Game Token', 1, 'GT', [
             'from' => $fromAccount,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract, $fromAccount, $toAccount) {
