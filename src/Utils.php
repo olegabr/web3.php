@@ -277,8 +277,8 @@ class Utils
         if (!is_string($unit)) {
             throw new InvalidArgumentException('toWei unit must be string.');
 	}
-	$UNIT = self::UNITS[$unit];
-        if (!isset($UNIT)) {
+	$UNITS = self::UNITS;
+        if (!isset($UNITS[$unit])) {
             throw new InvalidArgumentException('toWei doesn\'t support ' . $unit . ' unit.');
         }
         $bnt = new BigNumber(self::UNITS[$unit]);
@@ -365,8 +365,8 @@ class Utils
         if (!is_string($unit)) {
             throw new InvalidArgumentException('fromWei unit must be string.');
         }
-	$UNIT = self::UNITS[$unit];
-        if (!isset($UNIT)) {
+	$UNITS = self::UNITS;
+        if (!isset($UNITS[$unit])) {
             throw new InvalidArgumentException('fromWei doesn\'t support ' . $unit . ' unit.');
         }
         $bnt = new BigNumber(self::UNITS[$unit]);
