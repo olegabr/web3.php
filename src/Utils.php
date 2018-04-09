@@ -509,7 +509,12 @@ class Utils
                     isset($negative1) ? $negative1 : false
                 ];
             } else {
-                $bn = new BigNumber($number);
+                if (self::isZeroPrefixed($number) || preg_match('/[a-f]+/', $number) === 1) {
+                    $number = self::stripZero($number);
+                    $bn = new BigNumber($number, 16);
+		} else {
+                    $bn = new BigNumber($number);
+		}
             }
             if (isset($negative1)) {
                 $bn = $bn->multiply($negative1);

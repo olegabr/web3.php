@@ -18,7 +18,7 @@ install:
 notifications:
   email:
     recipients:
-      - alk03073135@gmail.com
+      - olegabrosimovnsk@gmail.com
     on_success: always
     on_failure: always
 
