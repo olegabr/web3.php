@@ -9,11 +9,11 @@ php:
   - 7.2
 
 before_install:
-  - nvm install 8
+        - nvm install 8
 
 install:
   - npm install -g ganache-cli
-  - composer install
+  - composer install --prefer-dist --no-interaction
 
 notifications:
   email:

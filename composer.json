@@ -1,5 +1,5 @@
 {
-    "name": "sc0vu/web3.php",
+    "name": "olegabr/web3.php",
     "description": "Ethereum web3 interface.",
     "type": "library",
     "license": "MIT",
@@ -10,7 +10,7 @@
         },
         {
             "name": "Oleg Abrosimov",
-            "homepage": "https://github.com/olegabr/web3.php"
+            "email": "olegabrosimovnsk@gmail.com"
         }
     ],
     "repositories": [
