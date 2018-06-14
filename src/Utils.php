@@ -285,9 +285,7 @@ class Utils
 
         if (is_array($bn)) {
             // fraction number
-            list($whole, $fraction, $negative1) = $bn;
-
-            $fractionLength = strlen($fraction->toString());
+            list($whole, $fraction, $fractionLength, $negative1) = $bn;
 
             if ($fractionLength > strlen(self::UNITS[$unit])) {
                 throw new InvalidArgumentException('toWei fraction part is out of limit.');
@@ -506,6 +504,7 @@ class Utils
                 return [
                     new BigNumber($whole),
                     new BigNumber($fraction),
+                    strlen($comps[1]),
                     isset($negative1) ? $negative1 : false
                 ];
             } else {
