@@ -11,7 +11,13 @@
         {
             "name": "Oleg Abrosimov",
             "homepage": "https://github.com/olegabr/web3.php"
-	}
+        }
+    ],
+    "repositories": [
+       {
+          "type": "vcs",
+          "url": "https://github.com/olegabr/php-keccak"
+       }
     ],
     "require": {
         "guzzlehttp/guzzle": "~6.0",
