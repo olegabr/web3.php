@@ -12,6 +12,8 @@ while ! timeout 1 bash -c "echo > /dev/tcp/localhost/${ganache_port}"; do
   sleep 1
 done
 
+sleep 3
+
 echo "ganache launched"
 
 vendor/bin/phpunit --coverage-clover=coverage.xml
