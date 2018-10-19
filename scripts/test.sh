@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ganache_port=8545
-ganache-cli -g 0 -l 0 > /dev/null & 
+ganache-cli -g 0 -l 6000000 > /dev/null & 
 ganachecli_pid=$!
 echo "Start ganache-cli pid: $ganachecli_pid and wait for it to start"
 
