@@ -232,8 +232,8 @@ class SolidityType
     public function decode($value, $offset, $name)
     {
         if ($this->isDynamicArray($name)) {
-            $arrayOffset = (int) Utils::toBn('0x' . mb_substr($value, $offset * 2, 64))->toString();
-            $length = (int) Utils::toBn('0x' . mb_substr($value, $arrayOffset * 2, 64))->toString();
+            $arrayOffset = (int) Utils::toBn('0x' . mb_substr($value, (int)($offset * 2), 64))->toString();
+            $length = (int) Utils::toBn('0x' . mb_substr($value, (int)($arrayOffset * 2), 64))->toString();
             $arrayStart = $arrayOffset + 32;
 
             $nestedName = $this->nestedName($name);
@@ -259,14 +259,14 @@ class SolidityType
             }
             return $result;
         } elseif ($this->isDynamicType()) {
-            $dynamicOffset = (int) Utils::toBn('0x' . mb_substr($value, $offset * 2, 64))->toString();
-            $length = (int) Utils::toBn('0x' . mb_substr($value, $dynamicOffset * 2, 64))->toString();
+            $dynamicOffset = (int) Utils::toBn('0x' . mb_substr($value, (int)($offset * 2), 64))->toString();
+            $length = (int) Utils::toBn('0x' . mb_substr($value, (int)($dynamicOffset * 2), 64))->toString();
             $roundedLength = floor(($length + 31) / 32);
-            $param = mb_substr($value, $dynamicOffset * 2, ( 1 + $roundedLength) * 64);
+            $param = mb_substr($value, (int)($dynamicOffset * 2), (int)(( 1 + $roundedLength) * 64));
             return $this->outputFormat($param, $name);
         }
         $length = $this->staticPartLength($name);
-        $param = mb_substr($value, $offset * 2, $length * 2);
+        $param = mb_substr($value, (int)($offset * 2), (int)($length * 2));
 
         return $this->outputFormat($param, $name);
     }
