@@ -15,14 +15,14 @@ class ProviderTest extends TestCase
      */
     public function testSetRequestManager()
     {
-        $requestManager = new RequestManager('http://localhost:8545');
+        $requestManager = new RequestManager($this->testHost);
         $provider = new Provider($requestManager);
 
-        $this->assertEquals($provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($provider->requestManager->host, $this->testHost);
 
         $requestManager = new RequestManager($this->testRinkebyHost);
         $provider->requestManager = $requestManager;
 
-        $this->assertEquals($provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($provider->requestManager->host, $this->testHost);
     }
 }

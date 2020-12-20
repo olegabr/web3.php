@@ -49,7 +49,7 @@ class Web3Test extends TestCase
      */
     public function testInstance()
     {
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $web3 = new Web3(new HttpProvider($requestManager));
 
         $this->assertTrue($web3->provider instanceof HttpProvider);
@@ -69,13 +69,13 @@ class Web3Test extends TestCase
     public function testSetProvider()
     {
         $web3 = $this->web3;
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $web3->provider = new HttpProvider($requestManager);
 
-        $this->assertEquals($web3->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($web3->provider->requestManager->host, $this->testHost);
 
         $web3->provider = null;
-        $this->assertEquals($web3->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($web3->provider->requestManager->host, $this->testHost);
     }
 
     /**

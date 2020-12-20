@@ -51,14 +51,14 @@ class ShhTest extends TestCase
     public function testSetProvider()
     {
         $shh = $this->shh;
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $shh->provider = new HttpProvider($requestManager);
 
-        $this->assertEquals($shh->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($shh->provider->requestManager->host, $this->testHost);
 
         $shh->provider = null;
 
-        $this->assertEquals($shh->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($shh->provider->requestManager->host, $this->testHost);
     }
 
     /**

@@ -51,14 +51,14 @@ class PersonalTest extends TestCase
     public function testSetProvider()
     {
         $personal = $this->personal;
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $personal->provider = new HttpProvider($requestManager);
 
-        $this->assertEquals($personal->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($personal->provider->requestManager->host, $this->testHost);
 
         $personal->provider = null;
 
-        $this->assertEquals($personal->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($personal->provider->requestManager->host, $this->testHost);
     }
 
     /**

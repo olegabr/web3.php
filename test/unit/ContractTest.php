@@ -288,7 +288,7 @@ class ContractTest extends TestCase
     /**
      * testUserAbi
      * User abi from https://github.com/BlockHR/contracts
-     * 
+     *
      * @var string
      */
     protected $testUserAbi = '[
@@ -388,21 +388,21 @@ class ContractTest extends TestCase
     /**
      * testUserBytecode
      * User bytecode from https://github.com/BlockHR/contracts
-     * 
+     *
      * @var string
      */
     protected $testUserBytecode = '0x6060604052341561000f57600080fd5b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506108ee8061005e6000396000f30060606040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680636f77926b1461005c578063b3c2583514610181575b341561005757600080fd5b600080fd5b341561006757600080fd5b610093600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610249565b604051808060200180602001848152602001838103835286818151815260200191508051906020019080838360005b838110156100dd5780820151818401526020810190506100c2565b50505050905090810190601f16801561010a5780820380516001836020036101000a031916815260200191505b50838103825285818151815260200191508051906020019080838360005b83811015610143578082015181840152602081019050610128565b50505050905090810190601f1680156101705780820380516001836020036101000a031916815260200191505b509550505050505060405180910390f35b341561018c57600080fd5b610247600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509190803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091908035906020019091905050610545565b005b6102516107c7565b6102596107c7565b60003373ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff16141580156102e457506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614155b156102ee5761053e565b6000600160008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060020154141561033e5761053e565b600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156104145780601f106103e957610100808354040283529160200191610414565b820191906000526020600020905b8154815290600101906020018083116103f757829003601f168201915b50505050509250600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206001018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156104f15780601f106104c6576101008083540402835291602001916104f1565b820191906000526020600020905b8154815290600101906020018083116104d457829003601f168201915b50505050509150600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206002015490505b9193909250565b61054d6107db565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614156107c0576000600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600201541415156105f3576107bf565b8381600001819052508281602001819052508181604001818152505080600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082015181600001908051906020019061066b929190610809565b506020820151816001019080519060200190610688929190610809565b50604082015181600201559050508473ffffffffffffffffffffffffffffffffffffffff167f2771be550edc032daf255a8987e0164bcfad0a5b97238d8961f9c5e38fa3e4f3858585604051808060200180602001848152602001838103835286818151815260200191508051906020019080838360005b8381101561071b578082015181840152602081019050610700565b50505050905090810190601f1680156107485780820380516001836020036101000a031916815260200191505b50838103825285818151815260200191508051906020019080838360005b83811015610781578082015181840152602081019050610766565b50505050905090810190601f1680156107ae5780820380516001836020036101000a031916815260200191505b509550505050505060405180910390a25b5b5050505050565b602060405190810160405280600081525090565b6060604051908101604052806107ef610889565b81526020016107fc610889565b8152602001600081525090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061084a57805160ff1916838001178555610878565b82800160010185558215610878579182015b8281111561087757825182559160200191906001019061085c565b5b509050610885919061089d565b5090565b602060405190810160405280600081525090565b6108bf91905b808211156108bb5760008160009055506001016108a3565b5090565b905600a165627a7a72305820f4dd7dc4c22792dec463ec68973ad2ed12d5994e96a9e7b34db512d6e38143090029';
 
     /**
      * accounts
-     * 
+     *
      * @var array
      */
     protected $accounts;
 
     /**
      * contractAddress
-     * 
+     *
      * @var string
      */
     protected $contractAddress;
@@ -429,7 +429,7 @@ class ContractTest extends TestCase
 
     /**
      * testInstance
-     * 
+     *
      * @return void
      */
     public function testInstance()
@@ -442,25 +442,25 @@ class ContractTest extends TestCase
 
     /**
      * testSetProvider
-     * 
+     *
      * @return void
      */
     public function testSetProvider()
     {
         $contract = $this->contract;
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $contract->provider = new HttpProvider($requestManager);
 
-        $this->assertEquals($contract->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($contract->provider->requestManager->host, $this->testHost);
 
         $contract->provider = null;
 
-        $this->assertEquals($contract->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($contract->provider->requestManager->host, $this->testHost);
     }
 
     /**
      * testDeploy
-     * 
+     *
      * @return void
      */
     public function testDeploy()
@@ -499,7 +499,7 @@ class ContractTest extends TestCase
 
     /**
      * testSend
-     * 
+     *
      * @return void
      */
     public function testSend()
@@ -575,7 +575,7 @@ class ContractTest extends TestCase
 
     /**
      * testCall
-     * 
+     *
      * @return void
      */
     public function testCall()
@@ -646,7 +646,7 @@ class ContractTest extends TestCase
 
     /**
      * testEstimateGas
-     * 
+     *
      * @return void
      */
     public function testEstimateGas()
@@ -719,7 +719,7 @@ class ContractTest extends TestCase
 
     /**
      * testGetData
-     * 
+     *
      * @return void
      */
     public function testGetData()
@@ -775,7 +775,7 @@ class ContractTest extends TestCase
 
     /**
      * testDecodeMethodReturn
-     * 
+     *
      * @return void
      */
     public function testDecodeMethodReturn()
@@ -1207,7 +1207,7 @@ class ContractTest extends TestCase
             $account = $this->accounts[0];
         }
         $contract = new Contract($this->web3->provider, $abi);
-        $contract->bytecode($bytecode)->new([
+        $contract->bytecode($bytecode)->deploy([
             'from' => $account,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract, &$contractAddress) {
@@ -1273,7 +1273,7 @@ class ContractTest extends TestCase
 
     /**
      * testIssue134
-     * 
+     *
      * @return void
      */
     public function testIssue134()
@@ -1381,7 +1381,7 @@ class ContractTest extends TestCase
             $account = $this->accounts[0];
         }
         $contract = new Contract($this->web3->provider, $abi);
-        $contract->bytecode($bytecode)->new([
+        $contract->bytecode($bytecode)->deploy([
             'from' => $account,
             'gas' => '0x200b20'
         ], function ($err, $result) use ($contract, &$contractAddress) {

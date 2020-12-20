@@ -51,14 +51,14 @@ class NetTest extends TestCase
     public function testSetProvider()
     {
         $net = $this->net;
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $net->provider = new HttpProvider($requestManager);
 
-        $this->assertEquals($net->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($net->provider->requestManager->host, $this->testHost);
 
         $net->provider = null;
 
-        $this->assertEquals($net->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($net->provider->requestManager->host, $this->testHost);
     }
 
     /**

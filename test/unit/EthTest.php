@@ -51,14 +51,14 @@ class EthTest extends TestCase
     public function testSetProvider()
     {
         $eth = $this->eth;
-        $requestManager = new HttpRequestManager('http://localhost:8545');
+        $requestManager = new HttpRequestManager($this->testHost);
         $eth->provider = new HttpProvider($requestManager);
 
-        $this->assertEquals($eth->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($eth->provider->requestManager->host, $this->testHost);
 
         $eth->provider = null;
 
-        $this->assertEquals($eth->provider->requestManager->host, 'http://localhost:8545');
+        $this->assertEquals($eth->provider->requestManager->host, $this->testHost);
     }
 
     /**
