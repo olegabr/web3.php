@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -19,7 +19,7 @@ class IntegerFormatter implements IFormatter
 {
     /**
      * format
-     * 
+     *
      * @param mixed $value
      * @return string
      */
@@ -38,7 +38,14 @@ class IntegerFormatter implements IFormatter
 
         if ($padded !== 'f') {
             $padded = '0';
-        }        
-        return implode('', array_fill(0, $digit-mb_strlen($bnHex), $padded)) . $bnHex;
+        }
+        if ($digit > mb_strlen($bnHex)) {
+          return implode('', array_fill(0, $digit-mb_strlen($bnHex), $padded)) . $bnHex;
+        }
+        $bnHex = ltrim($bnHex, '0');
+        if ($digit > mb_strlen($bnHex)) {
+          return implode('', array_fill(0, $digit-mb_strlen($bnHex), $padded)) . $bnHex;
+        }
+        return $bnHex;
     }
 }
