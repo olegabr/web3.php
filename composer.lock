@@ -241,16 +241,16 @@
         },
         {
             "name": "olegabr/keccak",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/olegabr/php-keccak.git",
-                "reference": "9976691c929f6117f4ab48682a4abb528d7f740e"
+                "reference": "31011dfdc4aace3b9786e005105bd41fa17574e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/olegabr/php-keccak/zipball/9976691c929f6117f4ab48682a4abb528d7f740e",
-                "reference": "9976691c929f6117f4ab48682a4abb528d7f740e",
+                "url": "https://api.github.com/repos/olegabr/php-keccak/zipball/31011dfdc4aace3b9786e005105bd41fa17574e4",
+                "reference": "31011dfdc4aace3b9786e005105bd41fa17574e4",
                 "shasum": ""
             },
             "require": {
@@ -292,9 +292,9 @@
                 "sha3-256"
             ],
             "support": {
-                "source": "https://github.com/olegabr/php-keccak/tree/1.0.5"
+                "source": "https://github.com/olegabr/php-keccak/tree/1.0.6"
             },
-            "time": "2020-12-20T21:38:57+00:00"
+            "time": "2021-06-20T07:10:00+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
