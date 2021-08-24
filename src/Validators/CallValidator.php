@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -44,6 +44,15 @@ class CallValidator
         if (isset($value['gasPrice']) && QuantityValidator::validate($value['gasPrice']) === false) {
             return false;
         }
+
+        // EIP-1559
+        if (isset($value['maxPriorityFeePerGas']) && QuantityValidator::validate($value['maxPriorityFeePerGas']) === false) {
+            return false;
+        }
+        if (isset($value['maxFeePerGas']) && QuantityValidator::validate($value['maxFeePerGas']) === false) {
+            return false;
+        }
+
         if (isset($value['value']) && QuantityValidator::validate($value['value']) === false) {
             return false;
         }

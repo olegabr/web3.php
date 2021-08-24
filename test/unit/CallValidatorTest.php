@@ -9,14 +9,14 @@ class CallValidatorTest extends TestCase
 {
     /**
      * validator
-     * 
+     *
      * @var \Web3\Validators\CallValidator
      */
     protected $validator;
 
     /**
      * setUp
-     * 
+     *
      * @return void
      */
     public function setUp()
@@ -27,7 +27,7 @@ class CallValidatorTest extends TestCase
 
     /**
      * testValidate
-     * 
+     *
      * @return void
      */
     public function testValidate()
@@ -50,6 +50,14 @@ class CallValidatorTest extends TestCase
         ]));
         $this->assertEquals(false, $validator->validate([
             'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+            'maxPriorityFeePerGas' => '',
+        ]));
+        $this->assertEquals(false, $validator->validate([
+            'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+            'maxFeePerGas' => '',
+        ]));
+        $this->assertEquals(false, $validator->validate([
+            'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
             'value' => '',
         ]));
         $this->assertEquals(false, $validator->validate([
@@ -67,6 +75,22 @@ class CallValidatorTest extends TestCase
             'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
             'gas' => '0x76c0',
             'gasPrice' => '0x9184e72a000',
+            'value' => '0x9184e72a',
+            'data' => '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+            'nonce' => '0x9184e72a',
+        ]));
+        $this->assertEquals(true, $validator->validate([
+            'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+            'gas' => '0x76c0',
+            'maxPriorityFeePerGas' => '0x9184e72a000',
+            'value' => '0x9184e72a',
+            'data' => '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+            'nonce' => '0x9184e72a',
+        ]));
+        $this->assertEquals(true, $validator->validate([
+            'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+            'gas' => '0x76c0',
+            'maxFeePerGas' => '0x9184e72a000',
             'value' => '0x9184e72a',
             'data' => '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
             'nonce' => '0x9184e72a',

@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -44,56 +44,56 @@ class Contract
 
     /**
      * abi
-     * 
+     *
      * @var array
      */
     protected $abi;
 
     /**
      * constructor
-     * 
+     *
      * @var array
      */
     protected $constructor = [];
 
     /**
      * functions
-     * 
+     *
      * @var array
      */
     protected $functions = [];
 
     /**
      * events
-     * 
+     *
      * @var array
      */
     protected $events = [];
 
     /**
      * toAddress
-     * 
+     *
      * @var string
      */
     protected $toAddress;
 
     /**
      * bytecode
-     * 
+     *
      * @var string
      */
     protected $bytecode;
 
     /**
      * eth
-     * 
+     *
      * @var \Web3\Eth
      */
     protected $eth;
 
     /**
      * ethabi
-     * 
+     *
      * @var \Web3\Contracts\Ethabi
      */
     protected $ethabi;
@@ -167,7 +167,7 @@ class Contract
 
     /**
      * call
-     * 
+     *
      * @param string $name
      * @param array $arguments
      * @return void
@@ -184,7 +184,7 @@ class Contract
 
     /**
      * get
-     * 
+     *
      * @param string $name
      * @return mixed
      */
@@ -200,7 +200,7 @@ class Contract
 
     /**
      * set
-     * 
+     *
      * @param string $name
      * @param mixed $value
      * @return mixed
@@ -217,7 +217,7 @@ class Contract
 
     /**
      * getProvider
-     * 
+     *
      * @return \Web3\Providers\Provider
      */
     public function getProvider()
@@ -241,7 +241,7 @@ class Contract
 
     /**
      * getDefaultBlock
-     * 
+     *
      * @return string
      */
     public function getDefaultBlock()
@@ -315,7 +315,7 @@ class Contract
 
     /**
      * setAbi
-     * 
+     *
      * @param string $abi
      * @return $this
      */
@@ -326,7 +326,7 @@ class Contract
 
     /**
      * getEthabi
-     * 
+     *
      * @return array
      */
     public function getEthabi()
@@ -336,7 +336,7 @@ class Contract
 
     /**
      * getEth
-     * 
+     *
      * @return \Web3\Eth
      */
     public function getEth()
@@ -346,7 +346,7 @@ class Contract
 
     /**
      * setBytecode
-     * 
+     *
      * @param string $bytecode
      * @return $this
      */
@@ -357,7 +357,7 @@ class Contract
 
     /**
      * setToAddress
-     * 
+     *
      * @param string $bytecode
      * @return $this
      */
@@ -368,7 +368,7 @@ class Contract
 
     /**
      * at
-     * 
+     *
      * @param string $address
      * @return $this
      */
@@ -384,7 +384,7 @@ class Contract
 
     /**
      * bytecode
-     * 
+     *
      * @param string $bytecode
      * @return $this
      */
@@ -400,7 +400,7 @@ class Contract
 
     /**
      * abi
-     * 
+     *
      * @param string $abi
      * @return $this
      */
@@ -439,7 +439,7 @@ class Contract
     /**
      * new
      * Deploy a contruct with params.
-     * 
+     *
      * @param mixed
      * @return void
      */
@@ -481,7 +481,7 @@ class Contract
     /**
      * send
      * Send function method.
-     * 
+     *
      * @param mixed
      * @return void
      */
@@ -522,6 +522,10 @@ class Contract
                 isset($transaction["to"]) ||
                 isset($transaction["gas"]) ||
                 isset($transaction["gasPrice"]) ||
+                // EIP-1559
+                isset($transaction["maxPriorityFeePerGas"]) ||
+                isset($transaction["maxFeePerGas"]) ||
+
                 isset($transaction["value"]) ||
                 isset($transaction["data"]) ||
                 isset($transaction["nonce"])
@@ -648,6 +652,10 @@ class Contract
                 !isset($transaction["to"]) &&
                 !isset($transaction["gas"]) &&
                 !isset($transaction["gasPrice"]) &&
+                // EIP-1559
+                !isset($transaction["maxPriorityFeePerGas"]) &&
+                !isset($transaction["maxFeePerGas"]) &&
+
                 !isset($transaction["value"]) &&
                 !isset($transaction["data"]) &&
                 !isset($transaction["nonce"])
@@ -672,7 +680,7 @@ class Contract
     /**
      * estimateGas
      * Estimate function gas.
-     * 
+     *
      * @param mixed
      * @return void
      */
@@ -708,7 +716,7 @@ class Contract
                 if (!is_string($method)) {
                     throw new InvalidArgumentException('Please make sure the method is string.');
                 }
-    
+
                 $functions = [];
                 foreach ($this->functions as $function) {
                     if ($function["name"] === $method) {
@@ -721,7 +729,7 @@ class Contract
                 if (is_callable($callback) !== true) {
                     throw new \InvalidArgumentException('The last param must be callback function.');
                 }
-    
+
                 // check the last one in arguments is transaction object
                 $argsLen = count($arguments);
                 $transaction = [];
@@ -735,6 +743,11 @@ class Contract
                     isset($transaction["to"]) ||
                     isset($transaction["gas"]) ||
                     isset($transaction["gasPrice"]) ||
+
+                    // EIP-1559
+                    isset($transaction["maxPriorityFeePerGas"]) ||
+                    isset($transaction["maxFeePerGas"]) ||
+
                     isset($transaction["value"]) ||
                     isset($transaction["data"]) ||
                     isset($transaction["nonce"])
@@ -794,7 +807,7 @@ class Contract
      * 1. Get the funtion data with params.
      * 2. Sign the data with user private key.
      * 3. Call sendRawTransaction.
-     * 
+     *
      * @param mixed
      * @return void
      */
@@ -822,7 +835,7 @@ class Contract
                 if (!is_string($method)) {
                     throw new InvalidArgumentException('Please make sure the method is string.');
                 }
-    
+
                 $functions = [];
                 foreach ($this->functions as $function) {
                     if ($function["name"] === $method) {
@@ -832,7 +845,7 @@ class Contract
                 if (count($functions) < 1) {
                     throw new InvalidArgumentException('Please make sure the method exists.');
                 }
-    
+
                 $params = $arguments;
                 $data = "";
                 $functionName = "";

@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -21,7 +21,7 @@ class TransactionFormatter implements IFormatter
 {
     /**
      * format
-     * 
+     *
      * @param mixed $value
      * @return string
      */
@@ -33,6 +33,15 @@ class TransactionFormatter implements IFormatter
         if (isset($value['gasPrice'])) {
             $value['gasPrice'] = QuantityFormatter::format($value['gasPrice']);
         }
+
+        // EIP-1559
+        if (isset($value['maxPriorityFeePerGas'])) {
+            $value['maxPriorityFeePerGas'] = QuantityFormatter::format($value['maxPriorityFeePerGas']);
+        }
+        if (isset($value['maxFeePerGas'])) {
+            $value['maxFeePerGas'] = QuantityFormatter::format($value['maxFeePerGas']);
+        }
+
         if (isset($value['value'])) {
             $value['value'] = QuantityFormatter::format($value['value']);
         }

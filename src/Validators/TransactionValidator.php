@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -22,7 +22,7 @@ class TransactionValidator
      * validate
      * To do: check is data optional?
      * Data is not optional on spec, see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction
-     * 
+     *
      * @param array $value
      * @return bool
      */
@@ -46,6 +46,15 @@ class TransactionValidator
         if (isset($value['gasPrice']) && QuantityValidator::validate($value['gasPrice']) === false) {
             return false;
         }
+
+        // EIP-1559
+        if (isset($value['maxPriorityFeePerGas']) && QuantityValidator::validate($value['maxPriorityFeePerGas']) === false) {
+            return false;
+        }
+        if (isset($value['maxFeePerGas']) && QuantityValidator::validate($value['maxFeePerGas']) === false) {
+            return false;
+        }
+
         if (isset($value['value']) && QuantityValidator::validate($value['value']) === false) {
             return false;
         }
