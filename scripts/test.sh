@@ -16,7 +16,7 @@ sleep 3
 
 echo "ganache launched"
 
-vendor/bin/phpunit --coverage-clover=coverage.xml
+vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-text=coverage.txt
 ret=$?
 
 kill -9 $ganachecli_pid

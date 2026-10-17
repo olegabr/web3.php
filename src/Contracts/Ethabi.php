@@ -15,6 +15,13 @@ use InvalidArgumentException;
 use stdClass;
 use Web3\Utils;
 use Web3\Formatters\IntegerFormatter;
+use Web3\Contracts\Types\Address;
+use Web3\Contracts\Types\Boolean;
+use Web3\Contracts\Types\Bytes;
+use Web3\Contracts\Types\DynamicBytes;
+use Web3\Contracts\Types\Integer;
+use Web3\Contracts\Types\Str;
+use Web3\Contracts\Types\Uinteger;
 
 class Ethabi
 {
@@ -35,6 +42,18 @@ class Ethabi
     {
         if (!is_array($types)) {
             $types = [];
+        }
+        if (count($types) === 0) {
+            // the same map Contract builds, so a bare Ethabi is usable too
+            $types = [
+                'address' => new Address,
+                'bool' => new Boolean,
+                'bytes' => new Bytes,
+                'dynamicBytes' => new DynamicBytes,
+                'int' => new Integer,
+                'string' => new Str,
+                'uint' => new Uinteger,
+            ];
         }
         $this->types = $types;
     }
@@ -260,22 +279,24 @@ class Ethabi
 
         foreach ($types as $key => $type) {
             $match = [];
+            $className = null;
 
-            if (preg_match('/^([a-zA-Z]+)/', $type, $match) === 1) {
-                if (isset($this->types[$match[0]])) {
-                    $className = $this->types[$match[0]];
+            if (preg_match('/^([a-zA-Z]+)/', $type, $match) === 1 && isset($this->types[$match[0]])) {
+                $className = $this->types[$match[0]];
 
-                    if (call_user_func([$this->types[$match[0]], 'isType'], $type) === false) {
-                        // check dynamic bytes
-                        if ($match[0] === 'bytes') {
-                            $className = $this->types['dynamicBytes'];
-                        } else {
-                            throw new InvalidArgumentException('Unsupport solidity parameter type: ' . $type);
-                        }
+                if (call_user_func([$this->types[$match[0]], 'isType'], $type) === false) {
+                    // check dynamic bytes
+                    if ($match[0] === 'bytes') {
+                        $className = $this->types['dynamicBytes'];
+                    } else {
+                        throw new InvalidArgumentException('Unsupport solidity parameter type: ' . $type);
                     }
-                    $solidityTypes[$key] = $className;
                 }
             }
+            if ($className === null) {
+                throw new InvalidArgumentException('Unsupport solidity parameter type: ' . $type);
+            }
+            $solidityTypes[$key] = $className;
         }
         return $solidityTypes;
     }

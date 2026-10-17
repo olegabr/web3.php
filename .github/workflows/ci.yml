@@ -18,7 +18,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: gmp, mbstring, json
-          coverage: none
+          coverage: xdebug
 
       - uses: actions/setup-node@v4
         with:
@@ -29,3 +29,10 @@ jobs:
       - run: composer install --no-interaction --prefer-dist
 
       - run: bash scripts/test.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-${{ matrix.php }}
+          path: coverage.xml
+          if-no-files-found: ignore
