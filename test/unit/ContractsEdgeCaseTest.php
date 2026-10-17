@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Test\TestCase;
 use Web3\Contracts\Ethabi;
 use Web3\Contracts\SolidityType;
+use Web3\Contracts\Types\Address;
 use Web3\Contracts\Types\Boolean;
 use Web3\Contracts\Types\Bytes;
 use Web3\Contracts\Types\DynamicBytes;
@@ -220,6 +221,59 @@ class ContractsEdgeCaseTest extends TestCase
 
         $this->assertFalse($ethabi->unknown);
         $ethabi->unknown = 'value';
+    }
+
+    /**
+     * testAddressInputFormat
+     * An address is a 20 byte value, its digits are hex, never decimal.
+     *
+     * @return void
+     */
+    public function testAddressInputFormat()
+    {
+        $type = new Address;
+        $abiType = ['type' => 'address'];
+
+        // an address made of digits only must not be read as a decimal number
+        $this->assertEquals(
+            str_repeat('0', 24) . str_repeat('1', 40),
+            $type->inputFormat('0x1111111111111111111111111111111111111111', $abiType)
+        );
+        $this->assertEquals(
+            str_repeat('0', 24) . '1234567890abcdef1234567890abcdef12345678',
+            $type->inputFormat('0x1234567890abcdef1234567890abcdef12345678', $abiType)
+        );
+        // a bare 40 character address works too
+        $this->assertEquals(
+            str_repeat('0', 24) . str_repeat('1', 40),
+            $type->inputFormat(str_repeat('1', 40), $abiType)
+        );
+        // a checksummed address is lowercased
+        $this->assertEquals(
+            str_repeat('0', 24) . '9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f',
+            $type->inputFormat('0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F', $abiType)
+        );
+    }
+
+    /**
+     * testAddressInputFormatInParameters
+     *
+     * @return void
+     */
+    public function testAddressInputFormatInParameters()
+    {
+        $ethabi = new Ethabi;
+        $address = '0x1111111111111111111111111111111111111111';
+
+        $this->assertEquals(
+            '0x' . str_repeat('0', 24) . str_repeat('1', 40),
+            $ethabi->encodeParameter('address', $address)
+        );
+        // the same value inside a parameter list keeps the same bytes
+        $this->assertEquals(
+            '0x' . str_repeat('0', 24) . str_repeat('1', 40) . str_repeat('0', 64),
+            $ethabi->encodeParameters(['address', 'uint256'], [$address, 0])
+        );
     }
 
     /**

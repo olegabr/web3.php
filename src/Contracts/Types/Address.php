@@ -68,6 +68,10 @@ class Address extends SolidityType implements IType
             if (Utils::isZeroPrefixed($value)) {
                 $value = Utils::stripZero($value);
             }
+            // an address is a 20 byte value, so its digits are always hex.
+            // IntegerFormatter::format() would read an address made of digits
+            // only (0x111…1111) as a decimal number, so pad it here instead.
+            return str_pad($value, 64, '0', STR_PAD_LEFT);
         }
         $value = IntegerFormatter::format($value);
 
