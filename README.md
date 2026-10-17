@@ -1,30 +1,31 @@
 # web3.php
 
 [![CI](https://github.com/olegabr/web3.php/actions/workflows/ci.yml/badge.svg)](https://github.com/olegabr/web3.php/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/olegabr/web3.php/branch/master/graph/badge.svg)](https://codecov.io/gh/olegabr/web3.php)
-[![Join the chat at https://gitter.im/web3-php/web3.php](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/web3-php/web3.php)
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/olegabr/web3.php/blob/master/LICENSE)
 
 
 A php interface for interacting with the Ethereum blockchain and ecosystem.
 
+This repository is the EthereumICO fork ([olegabr/web3.php](https://github.com/olegabr/web3.php))
+of [web3p/web3.php](https://github.com/web3p/web3.php). It keeps the `Web3` namespace and
+adds PHP 8.x support, typed transactions, EIP-712 and the ABI fixes.
+
 # Install
 
-Set minimum stability to dev
-```
-"minimum-stability": "dev"
+The fork is not published on Packagist, so point Composer at the repository:
+
+```json
+{
+    "repositories": [
+        { "type": "vcs", "url": "https://github.com/olegabr/web3.php" }
+    ],
+    "require": {
+        "olegabr/web3.php": "dev-master"
+    }
+}
 ```
 
-Then
-```
-composer require sc0vu/web3.php dev-master
-```
-
-Or you can add this line in composer.json
-
-```
-"sc0vu/web3.php": "dev-master"
-```
+Pin a tagged release instead of `dev-master` when one covers your needs.
 
 
 # Usage
@@ -40,12 +41,11 @@ $web3 = new Web3('http://localhost:8545');
 ```php
 use Web3\Web3;
 use Web3\Providers\HttpProvider;
-use Web3\RequestManagers\HttpRequestManager;
 
-$web3 = new Web3(new HttpProvider(new HttpRequestManager('http://localhost:8545')));
+$web3 = new Web3(new HttpProvider('http://localhost:8545'));
 
 // timeout
-$web3 = new Web3(new HttpProvider(new HttpRequestManager('http://localhost:8545', 0.1)));
+$web3 = new Web3(new HttpProvider('http://localhost:8545', 0.1));
 ```
 
 ### You can use callback to each rpc call:
