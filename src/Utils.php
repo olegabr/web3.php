@@ -501,7 +501,9 @@ class Utils
             } else {
                 if (self::isZeroPrefixed($number) || preg_match('/[a-f]+/', $number) === 1) {
                     $number = self::stripZero($number);
-                    $bn = new BigNumber($number, 16);
+                    // PHP 8 throws on gmp_init('hello', 16); invalid digits are
+                    // treated as zero, which is what the formatters expect.
+                    $bn = new BigNumber(ctype_xdigit($number) && '' !== $number ? $number : '0', 16);
 		} else {
                     $bn = new BigNumber($number);
 		}
@@ -519,7 +521,9 @@ class Utils
             }
             if (self::isZeroPrefixed($number) || preg_match('/[a-f]+/', $number) === 1) {
                 $number = self::stripZero($number);
-                $bn = new BigNumber($number, 16);
+                // PHP 8 throws on gmp_init('hello', 16); invalid digits are
+                // treated as zero, which is what the formatters expect.
+                $bn = new BigNumber(ctype_xdigit($number) && '' !== $number ? $number : '0', 16);
             } elseif (empty($number)) {
                 $bn = new BigNumber(0);
             } else {
