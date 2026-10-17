@@ -73,8 +73,8 @@ class ContractsEdgeCaseTest extends TestCase
     {
         $type = new Boolean;
 
-        $this->assertEquals(str_repeat('0', 63) . '1', $type->inputFormat(true, 'flag'));
-        $this->assertEquals(str_repeat('0', 64), $type->inputFormat(false, 'flag'));
+        $this->assertEquals(str_repeat('0', 63) . '1', $type->inputFormat(true, ['type' => 'bool']));
+        $this->assertEquals(str_repeat('0', 64), $type->inputFormat(false, ['type' => 'bool']));
         $this->assertTrue($type->outputFormat(str_repeat('0', 63) . '1', 'flag'));
         $this->assertFalse($type->outputFormat(str_repeat('0', 64), 'flag'));
     }
@@ -88,7 +88,7 @@ class ContractsEdgeCaseTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The value to inputFormat function must be boolean.');
-        (new Boolean)->inputFormat('true', 'flag');
+        (new Boolean)->inputFormat('true', ['type' => 'bool']);
     }
 
     /**
@@ -100,10 +100,14 @@ class ContractsEdgeCaseTest extends TestCase
     {
         $type = new Bytes;
 
-        $this->assertEquals('1234' . str_repeat('0', 60), $type->inputFormat('0x1234', 'data'));
+        $abiType = ['type' => 'bytes4'];
+
+        $this->assertEquals('1234' . str_repeat('0', 60), $type->inputFormat('0x1234', $abiType));
         // odd length hex is left padded to a whole byte
-        $this->assertEquals('0123' . str_repeat('0', 60), $type->inputFormat('0x123', 'data'));
-        $this->assertEquals('0x1234' . str_repeat('0', 60), $type->outputFormat('1234' . str_repeat('0', 60), 'data'));
+        $this->assertEquals('0123' . str_repeat('0', 60), $type->inputFormat('0x123', $abiType));
+        // outputFormat truncates to the declared size and prefixes 0x
+        $this->assertEquals('0x12340000', $type->outputFormat('1234' . str_repeat('0', 60), $abiType));
+        $this->assertEquals('0', $type->outputFormat(str_repeat('0', 64), $abiType));
     }
 
     /**
@@ -115,7 +119,7 @@ class ContractsEdgeCaseTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The value to inputFormat must be hex bytes.');
-        (new Bytes)->inputFormat('not hex', 'data');
+        (new Bytes)->inputFormat('not hex', ['type' => 'bytes4']);
     }
 
     /**
@@ -127,7 +131,7 @@ class ContractsEdgeCaseTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The value to inputFormat is too long.');
-        (new Bytes)->inputFormat('0x' . str_repeat('ab', 33), 'data');
+        (new Bytes)->inputFormat('0x' . str_repeat('ab', 33), ['type' => 'bytes32']);
     }
 
     /**
@@ -144,15 +148,15 @@ class ContractsEdgeCaseTest extends TestCase
         $this->assertFalse($type->isType('byte'));
         $this->assertTrue($type->isDynamicType());
 
-        $encoded = $type->inputFormat('0x1234', 'data');
+        $encoded = $type->inputFormat('0x1234', ['type' => 'bytes']);
         // 32 byte length prefix holding 2, then the right padded payload
         $this->assertEquals(str_repeat('0', 63) . '2' . '1234' . str_repeat('0', 60), $encoded);
-        $this->assertEquals('0x1234', $type->outputFormat($encoded, 'data'));
+        $this->assertEquals('0x1234', $type->outputFormat($encoded, ['type' => 'bytes']));
 
         // odd length hex is padded, not rejected
         $this->assertEquals(
             str_repeat('0', 63) . '2' . '0123' . str_repeat('0', 60),
-            $type->inputFormat('0x123', 'data')
+            $type->inputFormat('0x123', ['type' => 'bytes'])
         );
     }
 
@@ -165,7 +169,7 @@ class ContractsEdgeCaseTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The value to inputFormat must be hex bytes.');
-        (new DynamicBytes)->inputFormat('not hex', 'data');
+        (new DynamicBytes)->inputFormat('not hex', ['type' => 'bytes']);
     }
 
     /**
@@ -216,9 +220,6 @@ class ContractsEdgeCaseTest extends TestCase
 
         $this->assertFalse($ethabi->unknown);
         $ethabi->unknown = 'value';
-
-        // __callStatic is a deliberate no-op placeholder
-        $this->assertNull(Ethabi::undefinedStaticCall());
     }
 
     /**
@@ -385,7 +386,7 @@ class ContractsEdgeCaseTest extends TestCase
     public function testDecodeParametersInvalidParameter()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The type or param to decodeParameters must be string.');
+        $this->expectExceptionMessage('The param must be string.');
         (new Ethabi)->decodeParameters(['uint256'], 1);
     }
 }

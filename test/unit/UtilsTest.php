@@ -55,7 +55,7 @@ class UtilsTest extends TestCase
 
     /**
      * testIssue112Json
-     * see: https://github.com/sc0Vu/web3.php/issues/112
+     * see: https://github.com/web3p/web3.php/issues/112
      * 
      * @var string
      */
@@ -153,24 +153,24 @@ class UtilsTest extends TestCase
         $this->assertEquals('0x' . $this->testHex, Utils::toHex('hello world', true));
 
         $this->assertEquals('0x927c0', Utils::toHex(0x0927c0, true));
-        $this->assertEquals('0x927c0', Utils::toHex('600000', true));
+        $this->assertEquals('0x363030303030', Utils::toHex('600000', true));
         $this->assertEquals('0x927c0', Utils::toHex(600000, true));
         $this->assertEquals('0x927c0', Utils::toHex(new BigNumber(600000), true));
         
         $this->assertEquals('0xea60', Utils::toHex(0x0ea60, true));
-        $this->assertEquals('0xea60', Utils::toHex('60000', true));
+        $this->assertEquals('0x3630303030', Utils::toHex('60000', true));
         $this->assertEquals('0xea60', Utils::toHex(60000, true));
         $this->assertEquals('0xea60', Utils::toHex(new BigNumber(60000), true));
 
         $this->assertEquals('0x', Utils::toHex(0x00, true));
-        $this->assertEquals('0x', Utils::toHex('0', true));
+        $this->assertEquals('0x30', Utils::toHex('0', true));
         $this->assertEquals('0x', Utils::toHex(0, true));
         $this->assertEquals('0x', Utils::toHex(new BigNumber(0), true));
 
         $this->assertEquals('0x30', Utils::toHex(48, true));
-        $this->assertEquals('0x30', Utils::toHex('48', true));
+        $this->assertEquals('0x3438', Utils::toHex('48', true));
         $this->assertEquals('30', Utils::toHex(48));
-        $this->assertEquals('30', Utils::toHex('48'));
+        $this->assertEquals('3438', Utils::toHex('48'));
 
         $this->assertEquals('0x30', Utils::toHex(new BigNumber(48), true));
         $this->assertEquals('0x30', Utils::toHex(new BigNumber('48'), true));
@@ -232,16 +232,19 @@ class UtilsTest extends TestCase
         $this->assertEquals($isAddress, true);
 
         $isAddress = Utils::isAddress('0Xca35b7d915458ef540ade6068dfe2f44e8fa733c');
-        $this->assertEquals($isAddress, true);
+        $this->assertEquals($isAddress, false);
 
         $isAddress = Utils::isAddress('0XCA35B7D915458EF540ADE6068DFE2F44E8FA733C');
-        $this->assertEquals($isAddress, true);
+        $this->assertEquals($isAddress, false);
 
         $isAddress = Utils::isAddress('0xCA35B7D915458EF540ADE6068DFE2F44E8FA733C');
-        $this->assertEquals($isAddress, true);
+        $this->assertEquals($isAddress, false);
 
         $isAddress = Utils::isAddress('0xCA35B7D915458EF540ADE6068DFE2F44E8FA73cc');
         $this->assertEquals($isAddress, false);
+
+        $isAddress = Utils::isAddress('0xCA35b7d915458Ef540ADE6068DfE2F44E8fA73cC');
+        $this->assertEquals($isAddress, true);
 
         $this->expectException(InvalidArgumentException::class);
         $isAddress = Utils::isAddress(new stdClass);

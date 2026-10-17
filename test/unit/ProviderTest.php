@@ -3,26 +3,20 @@
 namespace Test\Unit;
 
 use Test\TestCase;
-use Web3\RequestManagers\RequestManager;
 use Web3\Providers\Provider;
+use Web3\Providers\HttpProvider;
 
 class ProviderTest extends TestCase
 {
     /**
-     * testSetRequestManager
+     * testNewProvider
      * 
      * @return void
      */
-    public function testSetRequestManager()
+    public function testNewProvider()
     {
-        $requestManager = new RequestManager($this->testHost);
-        $provider = new Provider($requestManager);
+        $provider = new HttpProvider('http://localhost:8545');
 
-        $this->assertEquals($provider->requestManager->host, $this->testHost);
-
-        $requestManager = new RequestManager($this->testRinkebyHost);
-        $provider->requestManager = $requestManager;
-
-        $this->assertEquals($provider->requestManager->host, $this->testHost);
+        $this->assertEquals($provider->host, 'http://localhost:8545');
     }
 }

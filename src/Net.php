@@ -13,8 +13,7 @@ namespace Web3;
 
 use Web3\Providers\Provider;
 use Web3\Providers\HttpProvider;
-use Web3\RequestManagers\RequestManager;
-use Web3\RequestManagers\HttpRequestManager;
+use Web3\Providers\WsProvider;
 
 class Net
 {
@@ -45,16 +44,17 @@ class Net
      * construct
      *
      * @param string|\Web3\Providers\Provider $provider
+     * @param float $timeout
      * @return void
      */
-    public function __construct($provider)
+    public function __construct($provider, $timeout = 1)
     {
         if (is_string($provider) && (filter_var($provider, FILTER_VALIDATE_URL) !== false)) {
             // check the uri schema
             if (preg_match('/^https?:\/\//', $provider) === 1) {
-                $requestManager = new HttpRequestManager($provider);
-
-                $this->provider = new HttpProvider($requestManager);
+                $this->provider = new HttpProvider($provider, $timeout);
+            } else if (preg_match('/^wss?:\/\//', $provider) === 1) {
+                $this->provider = new WsProvider($provider, $timeout);
             }
         } else if ($provider instanceof Provider) {
             $this->provider = $provider;
@@ -66,7 +66,7 @@ class Net
      * 
      * @param string $name
      * @param array $arguments
-     * @return void
+     * @return void|\React\Promise\PromiseInterface
      */
     public function __call($name, $arguments)
     {
@@ -77,7 +77,7 @@ class Net
         $class = explode('\\', static::class);
 
         if (preg_match('/^[a-zA-Z0-9]+$/', $name) === 1) {
-            $method = strtolower($class[count($class) - 1]) . '_' . $name;
+            $method = strtolower($class[1]) . '_' . $name;
 
             if (!in_array($method, $this->allowedMethods)) {
                 throw new \RuntimeException('Unallowed rpc method: ' . $method);
@@ -93,7 +93,7 @@ class Net
             }
             if (!array_key_exists($method, $this->methods)) {
                 // new the method
-                $methodClass = sprintf("\Web3\Methods\%s\%s", ucfirst($class[count($class) - 1]), ucfirst($name));
+                $methodClass = sprintf("\Web3\Methods\%s\%s", ucfirst($class[1]), ucfirst($name));
                 $methodObject = new $methodClass($method, $arguments);
                 $this->methods[$method] = $methodObject;
             } else {
@@ -102,7 +102,7 @@ class Net
             if ($methodObject->validate($arguments)) {
                 $inputs = $methodObject->transform($arguments, $methodObject->inputFormatters);
                 $methodObject->arguments = $inputs;
-                $this->provider->send($methodObject, $callback);
+                return $this->provider->send($methodObject, $callback);
             }
         }
     }

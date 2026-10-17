@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- *
+ * 
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- *
+ * 
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -13,8 +13,7 @@ namespace Web3;
 
 use Web3\Providers\Provider;
 use Web3\Providers\HttpProvider;
-use Web3\RequestManagers\RequestManager;
-use Web3\RequestManagers\HttpRequestManager;
+use Web3\Providers\WsProvider;
 
 class Eth
 {
@@ -27,34 +26,35 @@ class Eth
 
     /**
      * methods
-     *
+     * 
      * @var array
      */
     private $methods = [];
 
     /**
      * allowedMethods
-     *
+     * 
      * @var array
      */
     private $allowedMethods = [
-        'eth_protocolVersion', 'eth_syncing', 'eth_coinbase', 'eth_mining', 'eth_hashrate', 'eth_gasPrice', 'eth_accounts', 'eth_blockNumber', 'eth_getBalance', 'eth_getStorageAt', 'eth_getTransactionCount', 'eth_getBlockTransactionCountByHash', 'eth_getBlockTransactionCountByNumber', 'eth_getUncleCountByBlockHash', 'eth_getUncleCountByBlockNumber', 'eth_getUncleByBlockHashAndIndex', 'eth_getUncleByBlockNumberAndIndex', 'eth_getCode', 'eth_sign', 'eth_sendTransaction', 'eth_sendRawTransaction', 'eth_call', 'eth_estimateGas', 'eth_getBlockByHash', 'eth_getBlockByNumber', 'eth_getTransactionByHash', 'eth_getTransactionByBlockHashAndIndex', 'eth_getTransactionByBlockNumberAndIndex', 'eth_getTransactionReceipt', 'eth_compileSolidity', 'eth_compileLLL', 'eth_compileSerpent', 'eth_getWork', 'eth_newFilter', 'eth_newBlockFilter', 'eth_newPendingTransactionFilter', 'eth_uninstallFilter', 'eth_getFilterChanges', 'eth_getFilterLogs', 'eth_getLogs', 'eth_submitWork', 'eth_submitHashrate'
+        'eth_protocolVersion', 'eth_syncing', 'eth_coinbase', 'eth_mining', 'eth_hashrate', 'eth_gasPrice', 'eth_accounts', 'eth_blockNumber', 'eth_getBalance', 'eth_getStorageAt', 'eth_getTransactionCount', 'eth_getBlockTransactionCountByHash', 'eth_getBlockTransactionCountByNumber', 'eth_getUncleCountByBlockHash', 'eth_getUncleCountByBlockNumber', 'eth_getUncleByBlockHashAndIndex', 'eth_getUncleByBlockNumberAndIndex', 'eth_getCode', 'eth_sign', 'eth_sendTransaction', 'eth_sendRawTransaction', 'eth_call', 'eth_estimateGas', 'eth_getBlockByHash', 'eth_getBlockByNumber', 'eth_getTransactionByHash', 'eth_getTransactionByBlockHashAndIndex', 'eth_getTransactionByBlockNumberAndIndex', 'eth_getTransactionReceipt', 'eth_compileSolidity', 'eth_compileLLL', 'eth_compileSerpent', 'eth_getWork', 'eth_newFilter', 'eth_newBlockFilter', 'eth_newPendingTransactionFilter', 'eth_uninstallFilter', 'eth_getFilterChanges', 'eth_getFilterLogs', 'eth_getLogs', 'eth_submitWork', 'eth_submitHashrate', 'eth_feeHistory'
     ];
 
     /**
      * construct
      *
      * @param string|\Web3\Providers\Provider $provider
+     * @param float $timeout
      * @return void
      */
-    public function __construct($provider)
+    public function __construct($provider, $timeout = 1)
     {
         if (is_string($provider) && (filter_var($provider, FILTER_VALIDATE_URL) !== false)) {
             // check the uri schema
             if (preg_match('/^https?:\/\//', $provider) === 1) {
-                $requestManager = new HttpRequestManager($provider);
-
-                $this->provider = new HttpProvider($requestManager);
+                $this->provider = new HttpProvider($provider, $timeout);
+            } else if (preg_match('/^wss?:\/\//', $provider) === 1) {
+                $this->provider = new WsProvider($provider, $timeout);
             }
         } else if ($provider instanceof Provider) {
             $this->provider = $provider;
@@ -63,10 +63,10 @@ class Eth
 
     /**
      * call
-     *
+     * 
      * @param string $name
      * @param array $arguments
-     * @return void
+     * @return void|\React\Promise\PromiseInterface
      */
     public function __call($name, $arguments)
     {
@@ -77,7 +77,7 @@ class Eth
         $class = explode('\\', static::class);
 
         if (preg_match('/^[a-zA-Z0-9]+$/', $name) === 1) {
-            $method = strtolower($class[count($class) - 1]) . '_' . $name;
+            $method = strtolower($class[1]) . '_' . $name;
 
             if (!in_array($method, $this->allowedMethods)) {
                 throw new \RuntimeException('Unallowed rpc method: ' . $method);
@@ -93,7 +93,7 @@ class Eth
             }
             if (!array_key_exists($method, $this->methods)) {
                 // new the method
-                $methodClass = sprintf("\Web3\Methods\%s\%s", ucfirst($class[count($class) - 1]), ucfirst($name));
+                $methodClass = sprintf("\Web3\Methods\%s\%s", ucfirst($class[1]), ucfirst($name));
                 $methodObject = new $methodClass($method, $arguments);
                 $this->methods[$method] = $methodObject;
             } else {
@@ -102,14 +102,14 @@ class Eth
             if ($methodObject->validate($arguments)) {
                 $inputs = $methodObject->transform($arguments, $methodObject->inputFormatters);
                 $methodObject->arguments = $inputs;
-                $this->provider->send($methodObject, $callback);
+                return $this->provider->send($methodObject, $callback);
             }
         }
     }
 
     /**
      * get
-     *
+     * 
      * @param string $name
      * @return mixed
      */
@@ -125,7 +125,7 @@ class Eth
 
     /**
      * set
-     *
+     * 
      * @param string $name
      * @param mixed $value
      * @return mixed
@@ -142,7 +142,7 @@ class Eth
 
     /**
      * getProvider
-     *
+     * 
      * @return \Web3\Providers\Provider
      */
     public function getProvider()
@@ -152,7 +152,7 @@ class Eth
 
     /**
      * setProvider
-     *
+     * 
      * @param \Web3\Providers\Provider $provider
      * @return bool
      */
@@ -167,7 +167,7 @@ class Eth
 
     /**
      * batch
-     *
+     * 
      * @param bool $status
      * @return void
      */

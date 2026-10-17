@@ -13,10 +13,14 @@ namespace Web3\Methods\Eth;
 
 use InvalidArgumentException;
 use Web3\Methods\EthMethod;
-use Web3\Validators\StringValidator;
-use Web3\Formatters\StringFormatter;
+use Web3\Validators\TagValidator;
+use Web3\Validators\QuantityValidator;
+use Web3\Validators\ArrayNumberValidator;
+use Web3\Formatters\QuantityFormatter;
+use Web3\Formatters\OptionalQuantityFormatter;
+use Web3\Formatters\FeeHistoryFormatter;
 
-class CompileSolidity extends EthMethod
+class FeeHistory extends EthMethod
 {
     /**
      * validators
@@ -24,7 +28,9 @@ class CompileSolidity extends EthMethod
      * @var array
      */
     protected $validators = [
-        StringValidator::class
+        QuantityValidator::class, [
+            TagValidator::class, QuantityValidator::class
+        ], ArrayNumberValidator::class
     ];
 
     /**
@@ -33,7 +39,7 @@ class CompileSolidity extends EthMethod
      * @var array
      */
     protected $inputFormatters = [
-        StringFormatter::class
+        QuantityFormatter::class, OptionalQuantityFormatter::class
     ];
 
     /**
@@ -41,7 +47,9 @@ class CompileSolidity extends EthMethod
      * 
      * @var array
      */
-    protected $outputFormatters = [];
+    protected $outputFormatters = [
+        FeeHistoryFormatter::class
+    ];
 
     /**
      * defaultValues
@@ -49,16 +57,4 @@ class CompileSolidity extends EthMethod
      * @var array
      */
     protected $defaultValues = [];
-
-    /**
-     * construct
-     * 
-     * @param string $method
-     * @param array $arguments
-     * @return void
-     */
-    // public function __construct($method='', $arguments=[])
-    // {
-    //     parent::__construct($method, $arguments);
-    // }
 }

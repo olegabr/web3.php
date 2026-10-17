@@ -2,9 +2,9 @@
 
 /**
  * This file is part of web3.php package.
- *
+ * 
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- *
+ * 
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -21,7 +21,7 @@ class Utils
 {
     /**
      * SHA3_NULL_HASH
-     *
+     * 
      * @const string
      */
     const SHA3_NULL_HASH = 'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470';
@@ -29,7 +29,7 @@ class Utils
     /**
      * UNITS
      * from ethjs-unit
-     *
+     * 
      * @const array
      */
     const UNITS = [
@@ -65,7 +65,7 @@ class Utils
     /**
      * NEGATIVE1
      * Cannot work, see: http://php.net/manual/en/language.constants.syntax.php
-     *
+     * 
      * @const
      */
     // const NEGATIVE1 = new BigNumber(-1);
@@ -80,20 +80,19 @@ class Utils
     /**
      * toHex
      * Encoding string or integer or numeric string(is not zero prefixed) or big number to hex.
-     *
+     * 
      * @param string|int|BigNumber $value
      * @param bool $isPrefix
      * @return string
      */
     public static function toHex($value, $isPrefix=false)
     {
-        if (is_numeric($value)) {
+        if (is_int($value) || is_float($value)) {
             // turn to hex number
             $bn = self::toBn($value);
             $hex = $bn->toHex(true);
             $hex = preg_replace('/^0+(?!$)/', '', $hex);
         } elseif (is_string($value)) {
-            $value = self::stripZero($value);
             $hex = implode('', unpack('H*', $value));
         } elseif ($value instanceof BigNumber) {
             $hex = $value->toHex(true);
@@ -109,7 +108,7 @@ class Utils
 
     /**
      * hexToBin
-     *
+     * 
      * @param string
      * @return string
      */
@@ -121,13 +120,17 @@ class Utils
         if (self::isZeroPrefixed($value)) {
             $count = 1;
             $value = str_replace('0x', '', $value, $count);
+            // avoid suffix 0
+            if (strlen($value) % 2 > 0) {
+                $value = '0' . $value;
+            }
         }
         return pack('H*', $value);
     }
 
     /**
      * isZeroPrefixed
-     *
+     * 
      * @param string
      * @return bool
      */
@@ -141,7 +144,7 @@ class Utils
 
     /**
      * stripZero
-     *
+     * 
      * @param string $value
      * @return string
      */
@@ -156,7 +159,7 @@ class Utils
 
     /**
      * isNegative
-     *
+     * 
      * @param string
      * @return bool
      */
@@ -170,18 +173,16 @@ class Utils
 
     /**
      * isAddress
-     *
+     * 
      * @param string $value
-     * @return bool
+     * @return bool true if the address is lowercase or in checksum format otherwise false
      */
     public static function isAddress($value)
     {
         if (!is_string($value)) {
             throw new InvalidArgumentException('The value to isAddress function must be string.');
         }
-        if (preg_match('/^(0x|0X)?[a-f0-9A-F]{40}$/', $value) !== 1) {
-            return false;
-        } elseif (preg_match('/^(0x|0X)?[a-f0-9]{40}$/', $value) === 1 || preg_match('/^(0x|0X)?[A-F0-9]{40}$/', $value) === 1) {
+        if (preg_match('/^(0x)?[a-f0-9]{40}$/', $value) === 1) {
             return true;
         }
         return self::isAddressChecksum($value);
@@ -199,6 +200,9 @@ class Utils
             throw new InvalidArgumentException('The value to isAddressChecksum function must be string.');
         }
         $value = self::stripZero($value);
+        if (mb_strlen($value) !== 40) {
+            return false;
+        }
         $hash = self::stripZero(self::sha3(mb_strtolower($value)));
 
         for ($i = 0; $i < 40; $i++) {
@@ -239,7 +243,7 @@ class Utils
 
     /**
      * isHex
-     *
+     * 
      * @param string $value
      * @return bool
      */
@@ -251,7 +255,7 @@ class Utils
     /**
      * sha3
      * keccak256
-     *
+     * 
      * @param string $value
      * @return string
      */
@@ -273,7 +277,7 @@ class Utils
 
     /**
      * toString
-     *
+     * 
      * @param mixed $value
      * @return string
      */
@@ -288,12 +292,12 @@ class Utils
      * toWei
      * Change number from unit to wei.
      * For example:
-     * $wei = Utils::toWei('1', 'kwei');
+     * $wei = Utils::toWei('1', 'kwei'); 
      * $wei->toString(); // 1000
-     *
+     * 
      * @param BigNumber|string $number
      * @param string $unit
-     * @return \phpseclib\Math\BigInteger
+     * @return \phpseclib3\Math\BigInteger
      */
     public static function toWei($number, $unit)
     {
@@ -304,9 +308,8 @@ class Utils
 
         if (!is_string($unit)) {
             throw new InvalidArgumentException('toWei unit must be string.');
-      	}
-      	$UNITS = self::UNITS;
-        if (!isset($UNITS[$unit])) {
+        }
+        if (!isset(self::UNITS[$unit])) {
             throw new InvalidArgumentException('toWei doesn\'t support ' . $unit . ' unit.');
         }
         $bnt = new BigNumber(self::UNITS[$unit]);
@@ -320,7 +323,9 @@ class Utils
             }
             $whole = $whole->multiply($bnt);
 
-            $base = (new BigNumber(10))->pow(new BigNumber($fractionLength));
+            // phpseclib 3 has a real pow(), no need for the global mode dance
+            $powerBase = (new BigNumber(10))->pow(new BigNumber($fractionLength));
+            $base = $powerBase;
             $fraction = $fraction->multiply($bnt)->divide($base)[0];
 
             if ($negative1 !== false) {
@@ -336,9 +341,9 @@ class Utils
      * toEther
      * Change number from unit to ether.
      * For example:
-     * list($bnq, $bnr) = Utils::toEther('1', 'kether');
+     * list($bnq, $bnr) = Utils::toEther('1', 'kether'); 
      * $bnq->toString(); // 1000
-     *
+     * 
      * @param BigNumber|string|int $number
      * @param string $unit
      * @return array
@@ -358,12 +363,12 @@ class Utils
      * fromWei
      * Change number from wei to unit.
      * For example:
-     * list($bnq, $bnr) = Utils::fromWei('1000', 'kwei');
+     * list($bnq, $bnr) = Utils::fromWei('1000', 'kwei'); 
      * $bnq->toString(); // 1
-     *
+     * 
      * @param BigNumber|string|int $number
      * @param string $unit
-     * @return \phpseclib\Math\BigInteger
+     * @return \phpseclib3\Math\BigInteger
      */
     public static function fromWei($number, $unit)
     {
@@ -372,8 +377,7 @@ class Utils
         if (!is_string($unit)) {
             throw new InvalidArgumentException('fromWei unit must be string.');
         }
-	$UNITS = self::UNITS;
-        if (!isset($UNITS[$unit])) {
+        if (!isset(self::UNITS[$unit])) {
             throw new InvalidArgumentException('fromWei doesn\'t support ' . $unit . ' unit.');
         }
         $bnt = new BigNumber(self::UNITS[$unit]);
@@ -383,7 +387,7 @@ class Utils
 
     /**
      * jsonMethodToString
-     *
+     * 
      * @param stdClass|array $json
      * @return string
      */
@@ -429,7 +433,7 @@ class Utils
 
     /**
      * jsonToArray
-     *
+     * 
      * @param stdClass|array $json
      * @return array
      */
@@ -465,9 +469,9 @@ class Utils
     /**
      * toBn
      * Change number or number string to bignumber.
-     *
+     * 
      * @param BigNumber|string|int $number
-     * @return array|\phpseclib\Math\BigInteger
+     * @return array|\phpseclib3\Math\BigInteger
      */
     public static function toBn($number)
     {
@@ -499,14 +503,7 @@ class Utils
                     isset($negative1) ? $negative1 : false
                 ];
             } else {
-                if (self::isZeroPrefixed($number) || preg_match('/[a-f]+/', $number) === 1) {
-                    $number = self::stripZero($number);
-                    // PHP 8 throws on gmp_init('hello', 16); invalid digits are
-                    // treated as zero, which is what the formatters expect.
-                    $bn = new BigNumber(ctype_xdigit($number) && '' !== $number ? $number : '0', 16);
-		} else {
-                    $bn = new BigNumber($number);
-		}
+                $bn = new BigNumber($number);
             }
             if (isset($negative1)) {
                 $bn = $bn->multiply($negative1);
@@ -519,11 +516,9 @@ class Utils
                 $number = str_replace('-', '', $number, $count);
                 $negative1 = new BigNumber(-1);
             }
-            if (self::isZeroPrefixed($number) || preg_match('/[a-f]+/', $number) === 1) {
+            if (self::isZeroPrefixed($number) || preg_match('/^[0-9a-f]+$/i', $number) === 1) {
                 $number = self::stripZero($number);
-                // PHP 8 throws on gmp_init('hello', 16); invalid digits are
-                // treated as zero, which is what the formatters expect.
-                $bn = new BigNumber(ctype_xdigit($number) && '' !== $number ? $number : '0', 16);
+                $bn = new BigNumber($number, 16);
             } elseif (empty($number)) {
                 $bn = new BigNumber(0);
             } else {
@@ -536,5 +531,19 @@ class Utils
             throw new InvalidArgumentException('toBn number must be BigNumber, string or int.');
         }
         return $bn;
+    }
+
+    /**
+     * hexToNumber
+     * 
+     * @param string $hexNumber
+     * @return int
+     */
+    public static function hexToNumber($hexNumber)
+    {
+        if (!self::isZeroPrefixed($hexNumber)) {
+            $hexNumber = '0x' . $hexNumber;
+        }
+        return intval(self::toBn($hexNumber)->toString());
     }
 }

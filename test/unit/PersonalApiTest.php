@@ -10,21 +10,21 @@ class PersonalApiTest extends TestCase
 {
     /**
      * personal
-     *
+     * 
      * @var Web3\Personal
      */
     protected $personal;
 
     /**
      * newAccount
-     *
+     * 
      * @var string
      */
     protected $newAccount;
 
     /**
      * setUp
-     *
+     * 
      * @return void
      */
     public function setUp(): void
@@ -36,7 +36,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testListAccounts
-     *
+     * 
      * @return void
      */
     public function testListAccounts()
@@ -54,7 +54,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testNewAccount
-     *
+     * 
      * @return void
      */
     public function testNewAccount()
@@ -71,7 +71,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testUnlockAccount
-     *
+     * 
      * @return void
      */
     public function testUnlockAccount()
@@ -97,7 +97,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testUnlockAccountWithDuration
-     *
+     * 
      * @return void
      */
     public function testUnlockAccountWithDuration()
@@ -123,7 +123,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testLockAccount
-     *
+     * 
      * @return void
      */
     public function testLockAccount()
@@ -156,9 +156,9 @@ class PersonalApiTest extends TestCase
 
     /**
      * testSendTransaction
-     *
+     * 
      * @return void
-     */
+     */    
     public function testSendTransaction()
     {
         $personal = $this->personal;
@@ -172,34 +172,40 @@ class PersonalApiTest extends TestCase
             $this->assertTrue(is_string($account));
         });
 
-        $this->web3->eth->sendTransaction([
-            'from' => $this->coinbase,
-            'to' => $this->newAccount,
-            'value' => '0xffffffffffff',
-        ], function ($err, $transaction) {
-            if ($err !== null) {
-                return $this->fail($err->getMessage());
-            }
-            $this->assertTrue(is_string($transaction));
-            $this->assertTrue(mb_strlen($transaction) === 66);
+        $this->web3->eth->accounts(function ($err, $accounts) use ($personal) {
+            $this->web3->eth->sendTransaction([
+                'from' => $accounts[0],
+                'to' => $this->newAccount,
+                'value' => '0xfffffffffffff',
+            ], function ($err, $transaction) {
+                if ($err !== null) {
+                    return $this->fail($err->getMessage());
+                }
+                $this->assertTrue(is_string($transaction));
+                $this->assertTrue(mb_strlen($transaction) === 66);
+            });
         });
 
-        $personal->sendTransaction([
-            'from' => $this->newAccount,
-            'to' => $this->coinbase,
-            'value' => '0x01',
-        ], '123456', function ($err, $transaction) {
-            if ($err !== null) {
-                return $this->fail($err->getMessage());
-            }
-            $this->assertTrue(is_string($transaction));
-            $this->assertTrue(mb_strlen($transaction) === 66);
+        $this->web3->eth->accounts(function ($err, $accounts) use ($personal) {
+            $personal->sendTransaction([
+                'from' => $this->newAccount,
+                'to' => $accounts[0],
+                'value' => '0x01',
+                'gasLimit' => 21000,
+                'gasPrice' => 5000000000,
+            ], '123456', function ($err, $transaction) {
+                if ($err !== null) {
+                    return $this->fail($err->getMessage());
+                }
+                $this->assertTrue(is_string($transaction));
+                $this->assertTrue(mb_strlen($transaction) === 66);
+            });
         });
     }
 
     /**
      * testUnallowedMethod
-     *
+     * 
      * @return void
      */
     public function testUnallowedMethod()
@@ -218,7 +224,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testWrongParam
-     *
+     * 
      * @return void
      */
     public function testWrongParam()
@@ -237,7 +243,7 @@ class PersonalApiTest extends TestCase
 
     /**
      * testWrongCallback
-     *
+     * 
      * @return void
      */
     public function testWrongCallback()

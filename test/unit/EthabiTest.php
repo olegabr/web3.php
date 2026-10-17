@@ -298,7 +298,7 @@ class EthabiTest extends TestCase
 
     /**
      * testIssue71
-     * test 33 bytes and 128 bytes string, see: https://github.com/sc0Vu/web3.php/issues/71
+     * test 33 bytes and 128 bytes string, see: https://github.com/web3p/web3.php/issues/71
      * string generated from: https://www.lipsum.com/
      * 
      * @return void
@@ -313,5 +313,23 @@ class EthabiTest extends TestCase
         $specialString = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce pulvinar quam felis, suscipit posuere neque aliquam in cras amet.';
         $encodedString = $abi->encodeParameter('string', $specialString);
         $this->assertEquals($specialString, $abi->decodeParameter('string', $encodedString));
+    }
+
+    /**
+     * testAbiFixtures
+     * 
+     * @return void
+     */
+    public function testAbiFixtures()
+    {
+        // load test fixtures
+        $testFixtures = $this->loadFixtureJsonFile(dirname(__DIR__) . '/fixtures/abi.json');
+        $abi = $this->abi;
+        foreach ($testFixtures as $test) {
+            $result = $abi->encodeParameters([$test['type']], [$test['value']]);
+            $this->assertEquals($test['encoded'], $result);
+            $decodeResult = $abi->decodeParameters([$test['type']], $result);
+            $this->assertTrue(!is_null($decodeResult));
+        }
     }
 }
