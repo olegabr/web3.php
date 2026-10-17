@@ -76,8 +76,14 @@ class Personal
 
         $class = explode('\\', static::class);
 
+        // The RPC namespace is the class name itself (`Personal` -> `personal`),
+        // not the second segment of the fully qualified name: php-scoper rewrites
+        // the namespace to `Vendor\Package\Dependencies\Web3\Personal`, where
+        // `$class[1]` is the vendor prefix and every method is rejected.
+        $namespace = end($class);
+
         if (preg_match('/^[a-zA-Z0-9]+$/', $name) === 1) {
-            $method = strtolower($class[1]) . '_' . $name;
+            $method = strtolower($namespace) . '_' . $name;
 
             if (!in_array($method, $this->allowedMethods)) {
                 throw new \RuntimeException('Unallowed rpc method: ' . $method);
@@ -93,7 +99,7 @@ class Personal
             }
             if (!array_key_exists($method, $this->methods)) {
                 // new the method
-                $methodClass = sprintf("\Web3\Methods\%s\%s", ucfirst($class[1]), ucfirst($name));
+                $methodClass = __NAMESPACE__ . '\\Methods\\' . ucfirst($namespace) . '\\' . ucfirst($name);
                 $methodObject = new $methodClass($method, $arguments);
                 $this->methods[$method] = $methodObject;
             } else {
