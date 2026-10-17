@@ -1,6 +1,6 @@
 # web3.php
 
-[![Build Status](https://travis-ci.org/olegabr/web3.php.svg?branch=master)](https://travis-ci.org/olegabr/web3.php)
+[![CI](https://github.com/olegabr/web3.php/actions/workflows/ci.yml/badge.svg)](https://github.com/olegabr/web3.php/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/olegabr/web3.php/branch/master/graph/badge.svg)](https://codecov.io/gh/olegabr/web3.php)
 [![Join the chat at https://gitter.im/web3-php/web3.php](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/web3-php/web3.php)
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/olegabr/web3.php/blob/master/LICENSE)
