@@ -34,6 +34,11 @@ class WsProvider extends Provider implements IProvider
     /**
      * construct
      *
+     * The WebSocket transport is an optional dependency of this library
+     * (`ratchet/pawl` and `react/*` are a `suggest`, see `WsClient`). When it is
+     * not installed this fails here, with a message naming the package, instead
+     * of dying later with "Class not found" inside ReactPHP.
+     *
      * @param string $host
      * @param float $timeout
      * @return void
@@ -41,6 +46,16 @@ class WsProvider extends Provider implements IProvider
     public function __construct($host, $timeout = 1)
     {
         parent::__construct($host, $timeout);
+
+        if (!WsClient::is_available()) {
+            throw new \RuntimeException(
+                'The WebSocket transport is not installed: the "' . $host . '" '
+                . 'endpoint needs ratchet/pawl and react/*, which this library '
+                . 'declares as an optional dependency. Run '
+                . '"composer require ratchet/pawl", or use an http(s) endpoint.'
+            );
+        }
+
         $this->client = new WsClient(
             $host,
             $timeout

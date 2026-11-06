@@ -26,12 +26,30 @@ use Ratchet\RFC6455\Messaging\Message;
 use Exception;
 use RuntimeException;
 
-class NoOriginHeaderConnector extends Connector {
-    public function generateRequest($url, array $subProtocols, array $headers) {
-        return parent::generateRequest($url, $subProtocols, $headers)->withoutHeader('Origin');
-    }
-}
-
+/**
+ * WebSocket client for the `ws://` / `wss://` transport.
+ *
+ * **The WebSocket transport is optional.** `ratchet/pawl` and the ReactPHP
+ * packages it needs are a `suggest`, not a `require`, of this library: a plugin
+ * that only talks JSON-RPC over HTTP must not carry a WebSocket stack (and must
+ * not ask its bundler to prefix one). Install them explicitly to use `ws://`:
+ *
+ *     composer require ratchet/pawl
+ *
+ * The `use` statements above are inert - PHP resolves them lazily - so this
+ * class is safe to autoload in an installation without the transport. What was
+ * NOT safe was the `NoOriginHeaderConnector` subclass that used to live in this
+ * file: `class X extends Connector` resolves its parent at include time, and
+ * Composer includes this file as soon as anything mentions `WsClient`. That
+ * class now lives in `NoOriginHeaderConnector.php`, loaded only from
+ * `set_ws_connector()` after `is_available()` said yes.
+ *
+ * `is_available()` answers whether the transport can be used, and the entry
+ * points throw a `RuntimeException` naming the missing package instead of dying
+ * with "Class not found" inside ReactPHP.
+ *
+ * @package Web3
+ */
 class WsClient {
 
     public $url;
@@ -57,6 +75,45 @@ class WsClient {
 
     protected $deferredConnected;
     protected $deferredMessages = [];
+
+    /**
+     * Whether the optional WebSocket transport is installed.
+     *
+     * Answers the question a caller should ask before it builds a `WsProvider`,
+     * so a plugin can degrade to HTTP instead of catching an exception.
+     *
+     * @return bool
+     */
+    public static function is_available()
+    {
+        // `React\Promise\Timer` is a namespace with functions, not a class, so
+        // the timeout helper has to be asked for with `function_exists()`; a
+        // `class_exists('React\Promise\Timer')` is always false and would report
+        // the transport as missing while it is installed.
+        return class_exists('Ratchet\\Client\\Connector')
+            && class_exists('React\\EventLoop\\Loop')
+            && class_exists('React\\Promise\\Deferred')
+            && function_exists('React\\Async\\coroutine')
+            && function_exists('React\\Promise\\Timer\\timeout');
+    }
+
+    /**
+     * Refuse to run when the optional transport is missing.
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    protected function require_transport()
+    {
+        if (!self::is_available()) {
+            throw new RuntimeException(
+                'The WebSocket transport is not installed: this library declares '
+                . 'ratchet/pawl and react/* as an optional dependency. Run '
+                . '"composer require ratchet/pawl" to use ws:// or wss:// endpoints, '
+                . 'or connect over http(s) instead.'
+            );
+        }
+    }
 
     public function resolve($result) {
         $deferred = array_shift($this->deferredMessages);
@@ -94,6 +151,7 @@ class WsClient {
     }
 
     public function set_ws_connector() {
+        $this->require_transport();
         $react_default_connector = new React\Socket\Connector();
         if ($this->noOriginHeader) {
             $this->connector = new NoOriginHeaderConnector(Loop::get(), $react_default_connector);

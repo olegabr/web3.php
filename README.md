@@ -48,6 +48,36 @@ $web3 = new Web3(new HttpProvider('http://localhost:8545'));
 $web3 = new Web3(new HttpProvider('http://localhost:8545', 0.1));
 ```
 
+### WebSocket transport is optional
+
+`ws://` and `wss://` endpoints work through `Web3\Providers\WsProvider`, which
+needs [ratchet/pawl](https://github.com/ratchetphp/Pawl) and the ReactPHP
+packages it pulls in. Those are a **`suggest`**, not a `require`, since 0.3.5:
+a project that only talks JSON-RPC over HTTP does not carry a WebSocket stack,
+and does not ask its dependency bundler (Mozart, php-scoper) to prefix one.
+
+Install the transport explicitly if you want it:
+
+```sh
+composer require ratchet/pawl
+```
+
+Ask before you build a WebSocket provider, so the application can fall back to
+HTTP instead of handling an exception:
+
+```php
+use Web3\Providers\WsClient;
+use Web3\Providers\WsProvider;
+
+if (WsClient::is_available()) {
+    $web3 = new Web3(new WsProvider('wss://mainnet.infura.io/ws/v3/<key>'));
+}
+```
+
+Without the transport, `WsClient` still loads and `new WsProvider(...)` throws a
+`RuntimeException` that names `ratchet/pawl` - not a "Class not found" from
+inside ReactPHP.
+
 ### You can use callback to each rpc call:
 ```php
 $web3->clientVersion(function ($err, $version) {
