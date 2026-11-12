@@ -5,7 +5,7 @@ services:
     php:
         build:
             context: ./php
-            dockerfile: Dockerfile-72
+            dockerfile: Dockerfile-81
         volumes:
             - ./app:/app
         tty: true
